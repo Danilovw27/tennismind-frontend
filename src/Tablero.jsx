@@ -272,7 +272,7 @@ function Tablero({ tenista }) {
             {guarda && partido && (
               <div style={{ ...cajaOk, display: 'flex', gap: '8px', alignItems: 'center' }}>
                 Partido en curso. Set nº
-                <input type="number" min="1" max="5" value={setNumero} aria-label="Número de set"
+                <input id="set-numero" name="set_numero" type="number" min="1" max="5" value={setNumero} aria-label="Número de set"
                        onChange={(e) => setSetNumero(Math.min(5, Math.max(1, parseInt(e.target.value, 10) || 1)))}
                        style={{ width: '56px', padding: '4px' }} />
               </div>
