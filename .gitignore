@@ -22,3 +22,10 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+# Variables de entorno
+.env
+.env.*
+!.env.example
+
+# Datos personales (por si se copian por error al proyecto)
+*.xlsx
