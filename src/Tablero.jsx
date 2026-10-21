@@ -4,6 +4,7 @@ import { colorEstado } from './utils';
 import Historial from './Historial';
 import FormularioItems from './FormularioItems';
 import LecturaCombinada from './LecturaCombinada';
+import Observacion from './Observacion';
 import { boton, cajaAviso, cajaError, cajaOk } from './estilos';
 
 function Tablero({ tenista }) {
@@ -167,6 +168,20 @@ function Tablero({ tenista }) {
           }}
         >
           3. Historial
+        </button>
+        <button
+          onClick={() => setTabActiva('observacion')}
+          style={{
+            padding: '10px 20px',
+            borderRadius: '6px',
+            border: 'none',
+            background: tabActiva === 'observacion' ? '#2b6cb0' : '#edf2f7',
+            color: tabActiva === 'observacion' ? 'white' : '#4a5568',
+            fontWeight: '600',
+            cursor: 'pointer'
+          }}
+        >
+          4. Observación del entrenador
         </button>
       </div>
 
@@ -409,6 +424,8 @@ function Tablero({ tenista }) {
           </div>
         </div>
       )}
+
+      {tabActiva === 'observacion' && <Observacion tenista={tenista} onGuardado={() => setRefresco((n) => n + 1)} />}
 
       {tabActiva === 'historial' && <Historial tenista={tenista} refresco={refresco} />}
     </div>
