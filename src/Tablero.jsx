@@ -3,6 +3,7 @@ import { api, mensajeError } from './api';
 import { colorEstado } from './utils';
 import Historial from './Historial';
 import FormularioItems from './FormularioItems';
+import LecturaCombinada from './LecturaCombinada';
 import { boton, cajaAviso, cajaError, cajaOk } from './estilos';
 
 function Tablero({ tenista }) {
@@ -44,6 +45,7 @@ function Tablero({ tenista }) {
     puntos_totales_disputados: 30,
   });
   const [resSet, setResSet] = useState(null);
+  const [entradaSet, setEntradaSet] = useState(null); // telemetría con la que se calculó resSet (RF-06)
   const [errorPsi, setErrorPsi] = useState('');
   const [errorSet, setErrorSet] = useState('');
   const [guardadoPsi, setGuardadoPsi] = useState(false);
@@ -55,7 +57,7 @@ function Tablero({ tenista }) {
 
   // Al cambiar de jugador se limpian resultados y el partido en curso
   useEffect(() => {
-    setResPsi(null); setResSet(null); setPartido(null); setErrorPsi(''); setErrorSet('');
+    setResPsi(null); setResSet(null); setEntradaSet(null); setPartido(null); setErrorPsi(''); setErrorSet('');
     setGuardadoPsi(false); setGuardadoSet(false); setSetNumero(1);
   }, [tenista?.id]);
   const [loadingSet, setLoadingSet] = useState(false);
@@ -110,6 +112,7 @@ function Tablero({ tenista }) {
         ? await api.post(`/api/partidos/${partido.id}/mediciones`, { ...formSet, set_numero: setNumero })
         : await api.post('/api/partido/probabilidad-set', formSet);
       setResSet(res.data);
+      setEntradaSet({ ...formSet });
       setGuardadoSet(Boolean(guardar));
     } catch (err) {
       setErrorSet(mensajeError(err));
@@ -396,6 +399,7 @@ function Tablero({ tenista }) {
                 <p style={{ fontSize: '13px', color: '#718096', margin: 0 }}>
                   Modelo {resSet.modelo_version} entrenado con puntos de Grand Slam 2013 (US Open, Wimbledon y Roland Garros).
                 </p>
+                <LecturaCombinada entrada={entradaSet} resPsi={resPsi} tenista={tenista} />
               </div>
             ) : (
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%', border: '2px dashed #cbd5e0', borderRadius: '8px', color: '#a0aec0', padding: '40px', textAlign: 'center' }}>
