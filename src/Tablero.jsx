@@ -2,10 +2,12 @@ import { useEffect, useState } from 'react';
 import { api, mensajeError } from './api';
 import { colorEstado } from './utils';
 import Historial from './Historial';
+import FormularioItems from './FormularioItems';
 import { boton, cajaAviso, cajaError, cajaOk } from './estilos';
 
 function Tablero({ tenista }) {
   const [tabActiva, setTabActiva] = useState('psicologico'); // 'psicologico' o 'tactico'
+  const [modoPsi, setModoPsi] = useState('items'); // 'items' (30 ítems) o 'rapido' (10 puntajes)
 
   // Estado: Formulario Psicométrico (Modelo A)
   const [formPsi, setFormPsi] = useState({
@@ -169,6 +171,20 @@ function Tablero({ tenista }) {
       {tabActiva === 'psicologico' && (
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '20px' }}>
           <div style={{ background: '#f7fafc', padding: '20px', borderRadius: '8px', border: '1px solid #e2e8f0' }}>
+            <div style={{ display: 'flex', gap: '6px', marginBottom: '12px' }}>
+              {[['items', 'Cuestionario (30 ítems)'], ['rapido', 'Registro rápido (10 puntajes)']].map(([modo, titulo]) => (
+                <button key={modo} type="button" onClick={() => setModoPsi(modo)}
+                        style={{ flex: 1, padding: '8px', borderRadius: '6px', border: '1px solid #2b6cb0', fontWeight: 600, cursor: 'pointer',
+                                 background: modoPsi === modo ? '#2b6cb0' : 'white', color: modoPsi === modo ? 'white' : '#2b6cb0' }}>
+                  {titulo}
+                </button>
+              ))}
+            </div>
+            {modoPsi === 'items' && (
+              <FormularioItems key={tenista?.id ?? 'sin-jugador'} tenista={tenista} guarda={guarda}
+                               onResultado={(res, guardado) => { setResPsi(res); setGuardadoPsi(guardado); if (guardado) setRefresco((n) => n + 1); }} />
+            )}
+            {modoPsi === 'rapido' && (<>
             <h3 style={{ marginTop: 0 }}>Registro Rápido de Descanso</h3>
             <form onSubmit={analizarPsicologia}>
               {Object.keys(formPsi).map((key) => {
@@ -202,6 +218,7 @@ function Tablero({ tenista }) {
               </button>
               {errorPsi && <div role="alert" style={cajaError}>{errorPsi}</div>}
             </form>
+            </>)}
           </div>
 
           <div>
