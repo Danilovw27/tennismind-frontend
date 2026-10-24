@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { api, mensajeError } from './api';
 import { colorEstado, fechaCorta } from './utils';
+import { EtiquetaEstado } from './iconos';
 import { cajaAviso, cajaError, tarjeta } from './estilos';
 import instrumento from './items_observacion.json';
 
@@ -12,6 +13,15 @@ const NOMBRE_PUNTAJE = {
   score_rutinas_conc: 'Rutinas',
 };
 const NOMBRE_SECCION = { A: 'A · antes', B: 'B · durante', C: 'C · después' };
+
+// Cada estado tiene su propia forma, además de su color
+function MarcaEstado({ x, y, estado }) {
+  const c = colorEstado(estado);
+  if (estado === 'Óptimo') return <circle cx={x} cy={y} r="5.5" fill={c} />;
+  if (estado === 'Estable') return <rect x={x - 5} y={y - 5} width="10" height="10" fill={c} />;
+  if (estado === 'En riesgo') return <polygon points={`${x},${y - 6.5} ${x + 6.5},${y + 5} ${x - 6.5},${y + 5}`} fill={c} />;
+  return <polygon points={`${x},${y - 7} ${x + 7},${y} ${x},${y + 7} ${x - 7},${y}`} fill={c} />;
+}
 
 export default function Historial({ tenista, refresco }) {
   const [filas, setFilas] = useState([]);
@@ -59,28 +69,26 @@ export default function Historial({ tenista, refresco }) {
       {cronologico.length > 1 && (
         <svg viewBox={`0 0 ${ancho} ${alto}`} role="img" aria-label="Evolución del estado psicológico" style={{ width: '100%', maxWidth: ancho }}>
           {['Crítico', 'En riesgo', 'Estable', 'Óptimo'].map((n, i) => (
-            <text key={n} x="2" y={alto - margen - i * ((alto - 2 * margen) / 3) + 4} fontSize="9" fill="#718096">{n}</text>
+            <text key={n} x="2" y={alto - margen - i * ((alto - 2 * margen) / 3) + 4} fontSize="9" fill="var(--texto-2)">{n}</text>
           ))}
-          <polyline fill="none" stroke="#a0aec0" strokeWidth="1.5" points={puntos.map((p) => `${p.x + 30},${p.y}`).join(' ')} />
-          {puntos.map((p, i) => <circle key={i} cx={p.x + 30} cy={p.y} r="5" fill={colorEstado(p.estado)} />)}
+          <polyline fill="none" stroke="var(--texto-2)" strokeWidth="1.5" points={puntos.map((p) => `${p.x + 30},${p.y}`).join(' ')} />
+          {puntos.map((p, i) => <MarcaEstado key={i} x={p.x + 30} y={p.y} estado={p.estado} />)}
         </svg>
       )}
 
       {filas.length > 0 && (
         <div style={{ overflowX: 'auto' }}>
-          <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '13px' }}>
+          <table className="tabla-resp">
             <thead>
-              <tr style={{ textAlign: 'left', borderBottom: '1px solid #e2e8f0' }}>
-                <th>Fecha</th><th>Estado</th><th>Confianza</th><th>Recomendación</th>
-              </tr>
+              <tr><th>Fecha</th><th>Estado</th><th>Confianza</th><th>Recomendación</th></tr>
             </thead>
             <tbody>
               {filas.map((e) => (
-                <tr key={e.id} style={{ borderBottom: '1px solid #edf2f7' }}>
-                  <td style={{ padding: '6px 8px 6px 0' }}>{fechaCorta(e.fecha)}</td>
-                  <td style={{ color: colorEstado(e.estado), fontWeight: 600 }}>{e.estado}{e.alerta ? ' ⚠' : ''}</td>
-                  <td>{e.confianza}%</td>
-                  <td>{e.recomendacion}</td>
+                <tr key={e.id}>
+                  <td data-label="Fecha">{fechaCorta(e.fecha)}</td>
+                  <td data-label="Estado"><EtiquetaEstado estado={e.estado} />{e.alerta ? ' ⚠' : ''}</td>
+                  <td data-label="Confianza">{e.confianza}%</td>
+                  <td data-label="Recomendación">{e.recomendacion}</td>
                 </tr>
               ))}
             </tbody>
@@ -90,30 +98,28 @@ export default function Historial({ tenista, refresco }) {
 
       <h3 style={{ marginBottom: '8px' }}>Observaciones del entrenador</h3>
       {obs.some((o) => o.alerta_activa) && (
-        <div role="alert" style={{ ...cajaAviso, borderLeftColor: '#e53e3e', background: '#fff5f5', color: '#9b2c2c', fontWeight: 600 }}>
+        <div role="alert" className="msg msg-error" style={{ fontWeight: 700 }}>
           ⚠ Hay observaciones con alertas de riesgo. Revísalas abajo.
         </div>
       )}
       {obs.length === 0 && <p>Aún no hay observaciones del entrenador.</p>}
       {obs.length > 0 && (
         <div style={{ overflowX: 'auto' }}>
-          <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '13px' }}>
+          <table className="tabla-resp">
             <thead>
-              <tr style={{ textAlign: 'left', borderBottom: '1px solid #e2e8f0' }}>
-                <th>Fecha</th><th>Partido</th><th>Sección</th><th>Puntajes (1-5)</th><th>Alertas</th>
-              </tr>
+              <tr><th>Fecha</th><th>Partido</th><th>Sección</th><th>Puntajes (1-5)</th><th>Alertas</th></tr>
             </thead>
             <tbody>
               {obs.map((o) => (
-                <tr key={o.id} style={{ borderBottom: '1px solid #edf2f7', verticalAlign: 'top', background: o.alerta_activa ? '#fff5f5' : undefined }}>
-                  <td style={{ padding: '6px 8px 6px 0' }}>{fechaCorta(o.fecha)}</td>
-                  <td>{[o.partido?.torneo, o.partido?.rival_codigo && `vs ${o.partido.rival_codigo}`].filter(Boolean).join(' · ') || `Partido ${o.partido_id}`}</td>
-                  <td>{NOMBRE_SECCION[o.seccion]}{o.set_numero ? ` (set ${o.set_numero})` : ''}</td>
-                  <td>{Object.entries(o.puntajes).map(([k, v]) => `${NOMBRE_PUNTAJE[k] || k} ${v.toFixed(1)}`).join(' · ')}</td>
-                  <td style={{ color: '#c53030' }}>
+                <tr key={o.id} className={o.alerta_activa ? 'riesgo-fila' : undefined}>
+                  <td data-label="Fecha">{fechaCorta(o.fecha)}</td>
+                  <td data-label="Partido">{[o.partido?.torneo, o.partido?.rival_codigo && `vs ${o.partido.rival_codigo}`].filter(Boolean).join(' · ') || `Partido ${o.partido_id}`}</td>
+                  <td data-label="Sección">{NOMBRE_SECCION[o.seccion]}{o.set_numero ? ` (set ${o.set_numero})` : ''}</td>
+                  <td data-label="Puntajes">{Object.entries(o.puntajes).map(([k, v]) => `${NOMBRE_PUNTAJE[k] || k} ${v.toFixed(1)}`).join(' · ')}</td>
+                  <td data-label="Alertas" style={{ color: 'var(--critico)', fontWeight: 600 }}>
                     {o.alertas.map((id) => <div key={id}>⚠ {id}: {TEXTO_ALERTA[id]}</div>)}
                     {o.alertas.length === 0 && o.alerta_activa && <div>⚠ Ítem 29: señales de riesgo altas</div>}
-                    {!o.alerta_activa && '—'}
+                    {!o.alerta_activa && <span style={{ color: 'var(--texto-2)', fontWeight: 400 }}>—</span>}
                   </td>
                 </tr>
               ))}

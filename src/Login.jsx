@@ -1,6 +1,5 @@
 import { useState } from 'react';
 import { api, guardarToken, mensajeError } from './api';
-import { boton, caja, cajaError, etiqueta } from './estilos';
 
 export default function Login({ onLogin }) {
   const [modo, setModo] = useState('login'); // 'login' | 'registro'
@@ -30,37 +29,37 @@ export default function Login({ onLogin }) {
   };
 
   return (
-    <div style={{ ...caja, maxWidth: '380px', margin: '40px auto' }}>
-      <h3 style={{ marginTop: 0 }}>{modo === 'login' ? 'Iniciar sesión' : 'Crear cuenta de entrenador'}</h3>
+    <div className="tarjeta login">
+      <h2>{modo === 'login' ? 'Iniciar sesión' : 'Crear cuenta de entrenador'}</h2>
+      <p className="login-sub">
+        {modo === 'login' ? 'Accede al panel de monitoreo de tus jugadores.' : 'Necesitas el código de invitación del equipo.'}
+      </p>
       <form onSubmit={enviar}>
-        <label style={etiqueta} htmlFor="email">Correo</label>
-        <input id="email" type="email" required value={email} onChange={(e) => setEmail(e.target.value)}
-               style={{ width: '95%', padding: '8px', marginBottom: '12px' }} />
+        <label htmlFor="email">Correo</label>
+        <input id="email" type="email" required autoComplete="username" value={email} onChange={(e) => setEmail(e.target.value)} />
 
-        <label style={etiqueta} htmlFor="password">Contraseña {modo === 'registro' && '(mínimo 10 caracteres)'}</label>
-        <input id="password" type="password" required minLength={modo === 'registro' ? 10 : 1} value={password}
-               onChange={(e) => setPassword(e.target.value)}
-               style={{ width: '95%', padding: '8px', marginBottom: '12px' }} />
+        <label htmlFor="password">Contraseña {modo === 'registro' && '(mínimo 10 caracteres)'}</label>
+        <input id="password" type="password" required minLength={modo === 'registro' ? 10 : 1}
+               autoComplete={modo === 'registro' ? 'new-password' : 'current-password'}
+               value={password} onChange={(e) => setPassword(e.target.value)} />
 
         {modo === 'registro' && (
           <>
-            <label style={etiqueta} htmlFor="codigo">Código de invitación</label>
-            <input id="codigo" type="password" required value={codigo} onChange={(e) => setCodigo(e.target.value)}
-                   style={{ width: '95%', padding: '8px', marginBottom: '12px' }} />
+            <label htmlFor="codigo">Código de invitación</label>
+            <input id="codigo" type="password" required value={codigo} onChange={(e) => setCodigo(e.target.value)} />
           </>
         )}
 
-        {error && <div role="alert" style={cajaError}>{error}</div>}
+        {error && <div role="alert" className="msg msg-error">{error}</div>}
 
-        <button type="submit" disabled={cargando} style={boton('#3182ce', cargando)}>
+        <button type="submit" disabled={cargando} className="btn btn-bloque">
           {cargando ? 'Conectando...' : modo === 'login' ? 'Entrar' : 'Crear cuenta y entrar'}
         </button>
       </form>
-      <p style={{ fontSize: '12px', color: '#718096' }}>
+      <p style={{ fontSize: '0.8rem', color: 'var(--texto-2)', margin: '12px 0 0' }}>
         La primera conexión puede tardar hasta un minuto mientras despierta el servidor.
       </p>
-      <button type="button" onClick={() => { setModo(modo === 'login' ? 'registro' : 'login'); setError(''); }}
-              style={{ background: 'none', border: 'none', color: '#2b6cb0', cursor: 'pointer', padding: 0 }}>
+      <button type="button" className="enlace" onClick={() => { setModo(modo === 'login' ? 'registro' : 'login'); setError(''); }}>
         {modo === 'login' ? '¿No tienes cuenta? Regístrate' : 'Ya tengo cuenta'}
       </button>
     </div>

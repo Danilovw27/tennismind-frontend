@@ -53,26 +53,26 @@ export default function FormularioItems({ tenista, guarda, onResultado }) {
 
   return (
     <form onSubmit={enviar} noValidate>
-      <p style={{ fontSize: '13px', color: '#4a5568', marginTop: 0 }}>
+      <p style={{ fontSize: '13px', color: 'var(--texto-2)', marginTop: 0 }}>
         Responde los {ITEMS.length} ítems de 1 ({ETIQUETAS['1']}) a 5 ({ETIQUETAS['5']}).
         {' '}<strong>{contestadas}/{ITEMS.length}</strong> respondidos.
       </p>
 
       {SECCIONES.map((sec) => (
-        <fieldset key={sec.dimension} style={{ border: '1px solid #e2e8f0', borderRadius: '6px', margin: '0 0 12px 0', padding: '8px 12px', background: 'white' }}>
-          <legend style={{ fontSize: '13px', fontWeight: 700, color: '#2b6cb0', padding: '0 6px' }}>
-            {sec.dimension} <span style={{ fontWeight: 400, color: '#718096' }}>· {sec.variable}</span>
+        <fieldset key={sec.dimension} style={{ border: '1px solid var(--borde)', borderRadius: '6px', margin: '0 0 12px 0', padding: '8px 12px', background: 'white' }}>
+          <legend style={{ fontSize: '13px', fontWeight: 700, color: 'var(--marca)', padding: '0 6px' }}>
+            {sec.dimension} <span style={{ fontWeight: 400, color: 'var(--texto-2)' }}>· {sec.variable}</span>
           </legend>
           {sec.items.map((it) => {
             const falta = faltantes.includes(it.numero);
             return (
               <div key={it.numero} id={`item-${it.numero}`}
-                   style={{ padding: '8px 0', borderBottom: '1px solid #edf2f7', borderLeft: falta ? '3px solid #e53e3e' : '3px solid transparent', paddingLeft: '8px' }}>
+                   style={{ padding: '8px 0', borderBottom: '1px solid var(--suave)', borderLeft: falta ? '3px solid var(--critico)' : '3px solid transparent', paddingLeft: '8px' }}>
                 <div style={{ fontSize: '14px', marginBottom: '6px' }}>
                   <strong>{it.numero}.</strong> {it.texto}
                 </div>
                 <div role="radiogroup" aria-label={`Ítem ${it.numero}`} style={{ display: 'flex', gap: '6px', alignItems: 'center', flexWrap: 'wrap' }}>
-                  <span style={{ fontSize: '11px', color: '#718096', width: '46px' }}>{ETIQUETAS['1']}</span>
+                  <span style={{ fontSize: '11px', color: 'var(--texto-2)', width: '46px' }}>{ETIQUETAS['1']}</span>
                   {ESCALA.map((v) => (
                     <label key={v} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', fontSize: '12px', cursor: 'pointer', minWidth: '28px' }}>
                       <input type="radio" name={`item-${it.numero}`} value={v}
@@ -80,7 +80,7 @@ export default function FormularioItems({ tenista, guarda, onResultado }) {
                       {v}
                     </label>
                   ))}
-                  <span style={{ fontSize: '11px', color: '#718096' }}>{ETIQUETAS['5']}</span>
+                  <span style={{ fontSize: '11px', color: 'var(--texto-2)' }}>{ETIQUETAS['5']}</span>
                 </div>
               </div>
             );
@@ -89,7 +89,7 @@ export default function FormularioItems({ tenista, guarda, onResultado }) {
       ))}
 
       {error && <div role="alert" style={cajaError}>{error}</div>}
-      <button type="submit" disabled={cargando} style={boton('#3182ce', cargando)}>
+      <button type="submit" disabled={cargando} style={boton('var(--marca)', cargando)}>
         {cargando ? 'Evaluando...' : guarda ? 'Evaluar y guardar en historial' : 'Evaluar (sin guardar)'}
       </button>
     </form>

@@ -3,7 +3,8 @@ import { api, guardarToken, leerToken, registrarAlExpirar } from './api';
 import Login from './Login';
 import PanelJugadores from './PanelJugadores';
 import Tablero from './Tablero';
-import { botonSecundario } from './estilos';
+import { LogoTennisMind } from './iconos';
+import './tennismind.css';
 
 function App() {
   const [usuario, setUsuario] = useState(null);
@@ -27,31 +28,42 @@ function App() {
   }, []);
 
   return (
-    <div style={{ maxWidth: '960px', margin: '0 auto', padding: '24px', fontFamily: 'system-ui, sans-serif' }}>
-      <header style={{ textAlign: 'center', marginBottom: '16px' }}>
-        <h1 style={{ margin: 0, color: '#1a365d' }}>TennisMind Coach Dashboard</h1>
-        <p style={{ color: '#4a5568', margin: '4px 0 0 0' }}>Sistema de Monitoreo Psicológico y Predicción Táctica</p>
+    <>
+      <header className="cabecera">
+        <div className="cabecera-interior">
+          <div className="marca">
+            <LogoTennisMind />
+            <div>
+              <h1 className="marca-nombre">TennisMind</h1>
+              <p className="marca-lema">Monitoreo psicológico y predicción táctica</p>
+            </div>
+          </div>
+          {usuario && (
+            <div className="usuario">
+              <span className="usuario-correo" title={usuario.email}>{usuario.email}</span>
+              <button type="button" className="btn-salir" onClick={cerrarSesion}>Salir</button>
+            </div>
+          )}
+        </div>
       </header>
 
-      <div style={{ background: '#fffaf0', border: '1px solid #fbd38d', color: '#744210', padding: '8px 12px', borderRadius: '6px', fontSize: '13px', textAlign: 'center', marginBottom: '16px' }}>
-        Prototipo: el modelo psicológico fue entrenado con datos sintéticos y no constituye un diagnóstico.
-      </div>
+      <main className="app">
+        <div className="aviso-proto">
+          Prototipo: el modelo psicológico fue entrenado con datos sintéticos y no constituye un diagnóstico.
+        </div>
 
-      {verificando ? (
-        <p style={{ textAlign: 'center' }}>Verificando sesión...</p>
-      ) : !usuario ? (
-        <Login onLogin={setUsuario} />
-      ) : (
-        <>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px', fontSize: '14px', color: '#4a5568' }}>
-            <span>Sesión: <strong>{usuario.email}</strong></span>
-            <button type="button" onClick={cerrarSesion} style={botonSecundario()}>Cerrar sesión</button>
-          </div>
-          <PanelJugadores seleccionado={tenista} onSeleccionar={seleccionar} />
-          <Tablero tenista={tenista} />
-        </>
-      )}
-    </div>
+        {verificando ? (
+          <p style={{ textAlign: 'center' }} role="status">Verificando sesión...</p>
+        ) : !usuario ? (
+          <Login onLogin={setUsuario} />
+        ) : (
+          <>
+            <PanelJugadores seleccionado={tenista} onSeleccionar={seleccionar} />
+            <Tablero tenista={tenista} />
+          </>
+        )}
+      </main>
+    </>
   );
 }
 

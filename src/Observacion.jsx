@@ -124,7 +124,7 @@ export default function Observacion({ tenista, onGuardado }) {
   if (!puede) return <div style={cajaAviso}>Este jugador no tiene consentimiento vigente: registra el consentimiento para guardar observaciones.</div>;
 
   const marca = (p) => (p === 'A' ? yaA : p === 'C' ? yaC : setsB.length > 0);
-  const caja = { background: '#f7fafc', padding: '20px', borderRadius: '8px', border: '1px solid #e2e8f0' };
+  const caja = { background: 'var(--fondo)', padding: '20px', borderRadius: '8px', border: '1px solid var(--borde)' };
   const campo = { padding: '6px', flex: '1 1 120px' };
 
   return (
@@ -133,7 +133,7 @@ export default function Observacion({ tenista, onGuardado }) {
 
       <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', alignItems: 'flex-end', marginBottom: '12px' }}>
         <div style={{ flex: '1 1 240px' }}>
-          <label style={{ fontSize: '12px', color: '#4a5568' }} htmlFor="obs-partido">Partido</label>
+          <label style={{ fontSize: '12px', color: 'var(--texto-2)' }} htmlFor="obs-partido">Partido</label>
           <select id="obs-partido" value={partidoId} onChange={(e) => setPartidoId(e.target.value)} style={{ width: '100%', padding: '8px' }}>
             <option value="">{partidos.length ? 'Elige un partido' : 'Aún no hay partidos: crea uno'}</option>
             {partidos.map((p) => (
@@ -145,7 +145,7 @@ export default function Observacion({ tenista, onGuardado }) {
         </div>
       </div>
       <details style={{ marginBottom: '12px' }}>
-        <summary style={{ cursor: 'pointer', fontSize: '14px', color: '#2b6cb0' }}>Nuevo partido</summary>
+        <summary style={{ cursor: 'pointer', fontSize: '14px', color: 'var(--marca)' }}>Nuevo partido</summary>
         <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', marginTop: '8px' }}>
           <input aria-label="Código del rival" placeholder="Código del rival (p. ej. R01)" maxLength={40} value={nuevo.rival_codigo}
                  onChange={(e) => setNuevo({ ...nuevo, rival_codigo: e.target.value })} style={campo} />
@@ -155,7 +155,7 @@ export default function Observacion({ tenista, onGuardado }) {
                  onChange={(e) => setNuevo({ ...nuevo, superficie: e.target.value })} style={campo} />
           <button type="button" disabled={ocupado} onClick={crearPartido} style={botonSecundario(ocupado)}>Crear partido</button>
         </div>
-        <p style={{ fontSize: '12px', color: '#718096', margin: '6px 0 0' }}>Usa códigos, nunca nombres reales del rival.</p>
+        <p style={{ fontSize: '12px', color: 'var(--texto-2)', margin: '6px 0 0' }}>Usa códigos, nunca nombres reales del rival.</p>
       </details>
 
       {!partidoId ? <div style={cajaAviso}>Elige o crea un partido para empezar.</div> : (
@@ -163,13 +163,13 @@ export default function Observacion({ tenista, onGuardado }) {
           <div style={{ display: 'flex', gap: '6px', marginBottom: '12px' }}>
             {PASOS.map(([p, titulo]) => (
               <button key={p} type="button" onClick={() => cambiarPaso(p)}
-                      style={{ flex: 1, padding: '8px', borderRadius: '6px', border: '1px solid #2b6cb0', fontWeight: 600, cursor: 'pointer',
-                               background: paso === p ? '#2b6cb0' : 'white', color: paso === p ? 'white' : '#2b6cb0' }}>
+                      style={{ flex: 1, padding: '8px', borderRadius: '6px', border: '1px solid var(--marca)', fontWeight: 600, cursor: 'pointer',
+                               background: paso === p ? 'var(--marca)' : 'white', color: paso === p ? 'white' : 'var(--marca)' }}>
                 {titulo}{marca(p) ? ' ✓' : ''}
               </button>
             ))}
           </div>
-          <p style={{ fontSize: '13px', color: '#4a5568', margin: '0 0 12px' }}>
+          <p style={{ fontSize: '13px', color: 'var(--texto-2)', margin: '0 0 12px' }}>
             <strong>{instrumento.secciones[paso].momento}.</strong> {instrumento.secciones[paso].instruccion}
           </p>
 
@@ -182,13 +182,13 @@ export default function Observacion({ tenista, onGuardado }) {
               {paso === 'B' && (
                 <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap', marginBottom: '12px' }}>
                   <div>
-                    <label style={{ fontSize: '12px', color: '#4a5568' }} htmlFor="obs-set">Set nº</label>
+                    <label style={{ fontSize: '12px', color: 'var(--texto-2)' }} htmlFor="obs-set">Set nº</label>
                     <select id="obs-set" value={setNumero} onChange={(e) => setSetNumero(Number(e.target.value))} style={{ display: 'block', padding: '6px' }}>
                       {[1, 2, 3, 4, 5].map((n) => <option key={n} value={n} disabled={setsB.includes(n)}>{n}{setsB.includes(n) ? ' (ya registrado)' : ''}</option>)}
                     </select>
                   </div>
                   <div>
-                    <label style={{ fontSize: '12px', color: '#4a5568' }} htmlFor="obs-resultado">Resultado del set (opcional, p. ej. 6-4)</label>
+                    <label style={{ fontSize: '12px', color: 'var(--texto-2)' }} htmlFor="obs-resultado">Resultado del set (opcional, p. ej. 6-4)</label>
                     <input id="obs-resultado" value={form.resultado} maxLength={20} pattern="\d{1,2}-\d{1,2}(\(\d{1,2}\))?"
                            onChange={(e) => setForm({ ...form, resultado: e.target.value })} style={{ display: 'block', padding: '6px', width: '120px' }} />
                   </div>
@@ -196,15 +196,15 @@ export default function Observacion({ tenista, onGuardado }) {
               )}
 
               {agrupar(items).map((g) => (
-                <fieldset key={g.dimension} style={{ border: '1px solid #e2e8f0', borderRadius: '6px', margin: '0 0 12px', padding: '8px 12px', background: 'white' }}>
-                  <legend style={{ fontSize: '13px', fontWeight: 700, color: '#2b6cb0', padding: '0 6px' }}>{g.dimension}</legend>
+                <fieldset key={g.dimension} style={{ border: '1px solid var(--borde)', borderRadius: '6px', margin: '0 0 12px', padding: '8px 12px', background: 'white' }}>
+                  <legend style={{ fontSize: '13px', fontWeight: 700, color: 'var(--marca)', padding: '0 6px' }}>{g.dimension}</legend>
                   {g.items.map((it) => (
                     <div key={it.numero} id={`obs-${it.numero}`}
-                         style={{ padding: '8px 0 8px 8px', borderBottom: '1px solid #edf2f7', borderLeft: faltantes.includes(it.numero) ? '3px solid #e53e3e' : '3px solid transparent' }}>
+                         style={{ padding: '8px 0 8px 8px', borderBottom: '1px solid var(--suave)', borderLeft: faltantes.includes(it.numero) ? '3px solid var(--critico)' : '3px solid transparent' }}>
                       <div style={{ fontSize: '14px', marginBottom: '6px' }}><strong>{it.numero}.</strong> {it.texto}</div>
                       <div role="radiogroup" aria-label={`Ítem ${it.numero}`} style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
                         {ESCALA.map((v) => (
-                          <label key={v} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', fontSize: '11px', cursor: 'pointer', minWidth: '62px', color: '#4a5568' }}>
+                          <label key={v} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', fontSize: '11px', cursor: 'pointer', minWidth: '62px', color: 'var(--texto-2)' }}>
                             <input type="radio" name={`obs-${it.numero}`} value={v} checked={form.respuestas[it.numero] === v}
                                    onChange={() => { setForm({ ...form, respuestas: { ...form.respuestas, [it.numero]: v } }); setFaltantes((f) => f.filter((n) => n !== it.numero)); }} />
                             {v} · {ETIQUETAS[v]}
@@ -220,8 +220,8 @@ export default function Observacion({ tenista, onGuardado }) {
               ))}
 
               {PASO_CON_ALERTAS[paso] && (
-                <fieldset style={{ border: '1px solid #feb2b2', borderRadius: '6px', margin: '0 0 12px', padding: '8px 12px', background: '#fff5f5' }}>
-                  <legend style={{ fontSize: '13px', fontWeight: 700, color: '#c53030', padding: '0 6px' }}>Alertas de riesgo observadas</legend>
+                <fieldset style={{ border: '1px solid var(--critico)', borderRadius: '6px', margin: '0 0 12px', padding: '8px 12px', background: 'var(--critico-bg)' }}>
+                  <legend style={{ fontSize: '13px', fontWeight: 700, color: 'var(--critico)', padding: '0 6px' }}>Alertas de riesgo observadas</legend>
                   {instrumento.alertas_riesgo.map((a) => (
                     <label key={a.id} style={{ display: 'block', fontSize: '14px', padding: '3px 0' }}>
                       <input type="checkbox" checked={form.alertas.includes(a.id)}
@@ -249,7 +249,7 @@ export default function Observacion({ tenista, onGuardado }) {
               )}
 
               {error && <div role="alert" style={cajaError}>{error}</div>}
-              <button type="submit" disabled={ocupado} style={boton('#3182ce', ocupado)}>
+              <button type="submit" disabled={ocupado} style={boton('var(--marca)', ocupado)}>
                 {ocupado ? 'Guardando...' : paso === 'B' ? `Guardar sección B del set ${setNumero}` : `Guardar sección ${paso}`}
               </button>
             </form>

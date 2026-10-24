@@ -3,7 +3,7 @@ import { api, mensajeError } from './api';
 import { colorEstado, fechaCorta } from './utils';
 import { cajaError } from './estilos';
 
-const COLOR_PRIORIDAD = { Alta: '#c53030', Media: '#dd6b20', Baja: '#2f855a' };
+const COLOR_PRIORIDAD = { Alta: 'var(--critico)', Media: 'var(--riesgo)', Baja: 'var(--optimo)' };
 
 // Estado psicológico que se combina con el set: la evaluación hecha en esta sesión
 // o, si no hay, la última guardada del jugador seleccionado.
@@ -53,13 +53,13 @@ export default function LecturaCombinada({ entrada, resPsi, tenista }) {
     return () => { activo = false; };
   }, [entrada, resPsi, tenista?.id]);
 
-  const caja = { marginTop: '16px', padding: '14px', borderRadius: '8px', background: '#f7fafc', border: '1px solid #e2e8f0' };
+  const caja = { marginTop: '16px', padding: '14px', borderRadius: '8px', background: 'var(--fondo)', border: '1px solid var(--borde)' };
 
   if (cargando) return <div style={caja}>Combinando con el estado psicológico...</div>;
   if (error) return <div role="alert" style={cajaError}>{error}</div>;
   if (sinEstado) {
     return (
-      <div style={{ ...caja, color: '#4a5568', fontSize: '13px' }}>
+      <div style={{ ...caja, color: 'var(--texto-2)', fontSize: '13px' }}>
         <strong>Lectura combinada:</strong> evalúa primero el estado psicológico (pestaña 1) o selecciona un jugador con una evaluación guardada.
       </div>
     );
@@ -68,7 +68,7 @@ export default function LecturaCombinada({ entrada, resPsi, tenista }) {
 
   return (
     <div style={{ ...caja, borderLeft: `5px solid ${COLOR_PRIORIDAD[lectura.prioridad]}`, background: 'white' }}>
-      <span style={{ fontSize: '12px', color: '#718096', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Lectura combinada (estado + set)</span>
+      <span style={{ fontSize: '12px', color: 'var(--texto-2)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Lectura combinada (estado + set)</span>
       <div style={{ display: 'flex', gap: '8px', alignItems: 'center', margin: '6px 0' }}>
         <strong style={{ color: COLOR_PRIORIDAD[lectura.prioridad] }}>Prioridad {lectura.prioridad}</strong>
         <span style={{ fontSize: '12px', color: colorEstado(lectura.fuentes.estado_psicologico), fontWeight: 600 }}>
@@ -76,9 +76,9 @@ export default function LecturaCombinada({ entrada, resPsi, tenista }) {
         </span>
       </div>
       <p style={{ margin: '0 0 8px 0', fontSize: '14px' }}>{lectura.lectura}</p>
-      <div style={{ background: '#edf2f7', padding: '10px', borderRadius: '6px', fontSize: '14px' }}>{lectura.recomendacion_combinada}</div>
-      {lectura.notas.map((n) => <p key={n} style={{ margin: '8px 0 0', fontSize: '13px', color: '#9c4221' }}>{n}</p>)}
-      <p style={{ margin: '8px 0 0', fontSize: '12px', color: '#718096' }}>Usa {origen}. {lectura.aviso}</p>
+      <div style={{ background: 'var(--suave)', padding: '10px', borderRadius: '6px', fontSize: '14px' }}>{lectura.recomendacion_combinada}</div>
+      {lectura.notas.map((n) => <p key={n} style={{ margin: '8px 0 0', fontSize: '13px', color: 'var(--riesgo)' }}>{n}</p>)}
+      <p style={{ margin: '8px 0 0', fontSize: '12px', color: 'var(--texto-2)' }}>Usa {origen}. {lectura.aviso}</p>
     </div>
   );
 }

@@ -5,7 +5,15 @@ import Historial from './Historial';
 import FormularioItems from './FormularioItems';
 import LecturaCombinada from './LecturaCombinada';
 import Observacion from './Observacion';
+import { EtiquetaEstado, IconoHistorial, IconoObservacion, IconoPulso, IconoSet } from './iconos';
 import { boton, cajaAviso, cajaError, cajaOk } from './estilos';
+
+const SECCIONES = [
+  { id: 'psicologico', corto: 'Estado', largo: 'Estado psicológico', Icono: IconoPulso },
+  { id: 'tactico', corto: 'Set', largo: 'Probabilidad de set', Icono: IconoSet },
+  { id: 'historial', corto: 'Historial', largo: 'Historial', Icono: IconoHistorial },
+  { id: 'observacion', corto: 'Observación', largo: 'Observación del entrenador', Icono: IconoObservacion },
+];
 
 function Tablero({ tenista }) {
   const [tabActiva, setTabActiva] = useState('psicologico'); // 'psicologico' o 'tactico'
@@ -125,75 +133,27 @@ function Tablero({ tenista }) {
 
   return (
     <div>
-      {/* Selector de Módulos */}
-      <div style={{ display: 'flex', gap: '8px', marginBottom: '24px', justifyContent: 'center' }}>
-        <button
-          onClick={() => setTabActiva('psicologico')}
-          style={{
-            padding: '10px 20px',
-            borderRadius: '6px',
-            border: 'none',
-            background: tabActiva === 'psicologico' ? '#2b6cb0' : '#edf2f7',
-            color: tabActiva === 'psicologico' ? 'white' : '#4a5568',
-            fontWeight: '600',
-            cursor: 'pointer'
-          }}
-        >
-          1. Estado Psicológico (CSAI-2 / AI)
-        </button>
-        <button
-          onClick={() => setTabActiva('tactico')}
-          style={{
-            padding: '10px 20px',
-            borderRadius: '6px',
-            border: 'none',
-            background: tabActiva === 'tactico' ? '#2b6cb0' : '#edf2f7',
-            color: tabActiva === 'tactico' ? 'white' : '#4a5568',
-            fontWeight: '600',
-            cursor: 'pointer'
-          }}
-        >
-          2. Probabilidad de Set (Telemetría Grand Slam)
-        </button>
-        <button
-          onClick={() => setTabActiva('historial')}
-          style={{
-            padding: '10px 20px',
-            borderRadius: '6px',
-            border: 'none',
-            background: tabActiva === 'historial' ? '#2b6cb0' : '#edf2f7',
-            color: tabActiva === 'historial' ? 'white' : '#4a5568',
-            fontWeight: '600',
-            cursor: 'pointer'
-          }}
-        >
-          3. Historial
-        </button>
-        <button
-          onClick={() => setTabActiva('observacion')}
-          style={{
-            padding: '10px 20px',
-            borderRadius: '6px',
-            border: 'none',
-            background: tabActiva === 'observacion' ? '#2b6cb0' : '#edf2f7',
-            color: tabActiva === 'observacion' ? 'white' : '#4a5568',
-            fontWeight: '600',
-            cursor: 'pointer'
-          }}
-        >
-          4. Observación del entrenador
-        </button>
-      </div>
+      {/* Navegación: pestañas en escritorio, barra inferior en móvil */}
+      <nav className="nav" aria-label="Secciones">
+        {SECCIONES.map(({ id, corto, largo, Icono }) => (
+          <button key={id} type="button" className="nav-item" aria-current={tabActiva === id ? 'page' : undefined}
+                  onClick={() => setTabActiva(id)}>
+            <Icono />
+            <span className="nav-corto">{corto}</span>
+            <span className="nav-largo">{largo}</span>
+          </button>
+        ))}
+      </nav>
 
       {/* MÓDULO 1: ESTADO PSICOLÓGICO */}
       {tabActiva === 'psicologico' && (
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '20px' }}>
-          <div style={{ background: '#f7fafc', padding: '20px', borderRadius: '8px', border: '1px solid #e2e8f0' }}>
+        <div className="cuadricula">
+          <div style={{ background: 'var(--fondo)', padding: '20px', borderRadius: '8px', border: '1px solid var(--borde)' }}>
             <div style={{ display: 'flex', gap: '6px', marginBottom: '12px' }}>
               {[['items', 'Cuestionario (30 ítems)'], ['rapido', 'Registro rápido (10 puntajes)']].map(([modo, titulo]) => (
                 <button key={modo} type="button" onClick={() => setModoPsi(modo)}
-                        style={{ flex: 1, padding: '8px', borderRadius: '6px', border: '1px solid #2b6cb0', fontWeight: 600, cursor: 'pointer',
-                                 background: modoPsi === modo ? '#2b6cb0' : 'white', color: modoPsi === modo ? 'white' : '#2b6cb0' }}>
+                        style={{ flex: 1, padding: '8px', borderRadius: '6px', border: '1px solid var(--marca)', fontWeight: 600, cursor: 'pointer',
+                                 background: modoPsi === modo ? 'var(--marca)' : 'white', color: modoPsi === modo ? 'white' : 'var(--marca)' }}>
                   {titulo}
                 </button>
               ))}
@@ -230,7 +190,7 @@ function Tablero({ tenista }) {
               <button
                 type="submit"
                 disabled={loadingPsi}
-                style={{ width: '100%', padding: '12px', background: '#3182ce', color: 'white', border: 'none', borderRadius: '6px', fontWeight: 'bold', cursor: 'pointer' }}
+                style={{ width: '100%', padding: '12px', background: 'var(--marca)', color: 'white', border: 'none', borderRadius: '6px', fontWeight: 'bold', cursor: 'pointer' }}
               >
                 {loadingPsi ? 'Evaluando...' : guarda ? 'Evaluar y guardar en historial' : 'Evaluar (sin guardar)'}
               </button>
@@ -243,30 +203,28 @@ function Tablero({ tenista }) {
             {resPsi ? (
               <div style={{ background: 'white', padding: '20px', borderRadius: '8px', borderTop: `6px solid ${getColorEstado(resPsi.estado_psicologico)}`, boxShadow: '0 2px 8px rgba(0,0,0,0.08)' }}>
                 {guardadoPsi && <div style={cajaOk}>Evaluación guardada en el historial.</div>}
-                <span style={{ fontSize: '12px', color: '#718096', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Diagnóstico Actual</span>
-                <h2 style={{ margin: '4px 0 16px 0', color: getColorEstado(resPsi.estado_psicologico) }}>
-                  {resPsi.estado_psicologico}
-                </h2>
+                <span style={{ fontSize: '12px', color: 'var(--texto-2)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Diagnóstico Actual</span>
+                <div style={{ margin: '6px 0 16px 0' }}><EtiquetaEstado estado={resPsi.estado_psicologico} grande /></div>
 
                 {resPsi.alerta_activa && (
-                  <div style={{ background: '#fffaf0', borderLeft: '4px solid #dd6b20', padding: '10px 14px', borderRadius: '4px', marginBottom: '16px', color: '#9c4221', fontWeight: '600' }}>
+                  <div style={{ background: 'var(--riesgo-bg)', borderLeft: '4px solid var(--riesgo)', padding: '10px 14px', borderRadius: '4px', marginBottom: '16px', color: 'var(--riesgo)', fontWeight: '600' }}>
                     Alerta de Intervención Requerida
                   </div>
                 )}
 
                 <div style={{ marginBottom: '16px' }}>
-                  <label style={{ fontSize: '12px', color: '#718096', fontWeight: '600' }}>DIRECTIVA PARA EL ENTRENADOR</label>
-                  <div style={{ background: '#edf2f7', padding: '12px', borderRadius: '6px', marginTop: '4px', fontSize: '15px' }}>
+                  <label style={{ fontSize: '12px', color: 'var(--texto-2)', fontWeight: '600' }}>DIRECTIVA PARA EL ENTRENADOR</label>
+                  <div style={{ background: 'var(--suave)', padding: '12px', borderRadius: '6px', marginTop: '4px', fontSize: '15px' }}>
                     {resPsi.recomendacion_entrenador}
                   </div>
                 </div>
 
-                <div style={{ marginBottom: '16px', fontSize: '13px', color: '#4a5568' }}>
+                <div style={{ marginBottom: '16px', fontSize: '13px', color: 'var(--texto-2)' }}>
                   <strong>Confianza del modelo:</strong> {resPsi.confianza_prediccion_pct}%
                   {resPsi.probabilidades_por_clase_pct && Object.entries(resPsi.probabilidades_por_clase_pct).map(([clase, p]) => (
                     <div key={clase} style={{ display: 'flex', alignItems: 'center', gap: '8px', marginTop: '6px' }}>
                       <span style={{ width: '70px' }}>{clase}</span>
-                      <div style={{ flex: 1, background: '#edf2f7', height: '8px', borderRadius: '4px', overflow: 'hidden' }}>
+                      <div style={{ flex: 1, background: 'var(--suave)', height: '8px', borderRadius: '4px', overflow: 'hidden' }}>
                         <div style={{ width: `${p}%`, height: '100%', background: getColorEstado(clase) }} />
                       </div>
                       <span style={{ width: '44px', textAlign: 'right' }}>{p}%</span>
@@ -274,7 +232,7 @@ function Tablero({ tenista }) {
                   ))}
                 </div>
 
-                <div style={{ fontSize: '13px', color: '#4a5568', background: '#f7fafc', padding: '12px', borderRadius: '6px' }}>
+                <div style={{ fontSize: '13px', color: 'var(--texto-2)', background: 'var(--fondo)', padding: '12px', borderRadius: '6px' }}>
                   <strong>Métricas Consolidadas:</strong>
                   <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px', marginTop: '8px' }}>
                     <div>Ansiedad: {resPsi.metricas_consolidadas.ansiedad_total}</div>
@@ -285,7 +243,7 @@ function Tablero({ tenista }) {
                 </div>
               </div>
             ) : (
-              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%', border: '2px dashed #cbd5e0', borderRadius: '8px', color: '#a0aec0', padding: '40px', textAlign: 'center' }}>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%', border: '2px dashed var(--borde)', borderRadius: '8px', color: 'var(--texto-2)', padding: '40px', textAlign: 'center' }}>
                 Ajuste las variables y ejecute la evaluación para generar el diagnóstico en tiempo real.
               </div>
             )}
@@ -295,13 +253,13 @@ function Tablero({ tenista }) {
 
       {/* MÓDULO 2: TELEMETRÍA Y SET */}
       {tabActiva === 'tactico' && (
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '20px' }}>
-          <div style={{ background: '#f7fafc', padding: '20px', borderRadius: '8px', border: '1px solid #e2e8f0' }}>
+        <div className="cuadricula">
+          <div style={{ background: 'var(--fondo)', padding: '20px', borderRadius: '8px', border: '1px solid var(--borde)' }}>
             <h3 style={{ marginTop: 0 }}>Telemetría del Set en Curso</h3>
             {guarda && !partido && (
               <div style={cajaAviso}>
                 Para guardar las mediciones, inicia un partido.
-                <button type="button" onClick={iniciarPartido} style={{ ...boton('#2c5282'), marginTop: '8px' }}>Iniciar partido</button>
+                <button type="button" onClick={iniciarPartido} style={{ ...boton('var(--marca)'), marginTop: '8px' }}>Iniciar partido</button>
               </div>
             )}
             {guarda && partido && (
@@ -316,57 +274,57 @@ function Tablero({ tenista }) {
             <form onSubmit={analizarSet}>
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px', marginBottom: '12px' }}>
                 <div>
-                  <label style={{ fontSize: '12px', color: '#4a5568' }}>Aces (Jugador)</label>
+                  <label style={{ fontSize: '12px', color: 'var(--texto-2)' }}>Aces (Jugador)</label>
                   <input type="number" name="p1_aces" value={formSet.p1_aces} onChange={handleSetChange} style={{ width: '90%', padding: '6px' }} />
                 </div>
                 <div>
-                  <label style={{ fontSize: '12px', color: '#4a5568' }}>Aces (Rival)</label>
+                  <label style={{ fontSize: '12px', color: 'var(--texto-2)' }}>Aces (Rival)</label>
                   <input type="number" name="p2_aces" value={formSet.p2_aces} onChange={handleSetChange} style={{ width: '90%', padding: '6px' }} />
                 </div>
                 <div>
-                  <label style={{ fontSize: '12px', color: '#4a5568' }}>Dobles Faltas (J1)</label>
+                  <label style={{ fontSize: '12px', color: 'var(--texto-2)' }}>Dobles Faltas (J1)</label>
                   <input type="number" name="p1_dobles_faltas" value={formSet.p1_dobles_faltas} onChange={handleSetChange} style={{ width: '90%', padding: '6px' }} />
                 </div>
                 <div>
-                  <label style={{ fontSize: '12px', color: '#4a5568' }}>Dobles Faltas (Rival)</label>
+                  <label style={{ fontSize: '12px', color: 'var(--texto-2)' }}>Dobles Faltas (Rival)</label>
                   <input type="number" name="p2_dobles_faltas" value={formSet.p2_dobles_faltas} onChange={handleSetChange} style={{ width: '90%', padding: '6px' }} />
                 </div>
                 <div>
-                  <label style={{ fontSize: '12px', color: '#4a5568' }}>Errores No Forzados (J1)</label>
+                  <label style={{ fontSize: '12px', color: 'var(--texto-2)' }}>Errores No Forzados (J1)</label>
                   <input type="number" name="p1_errores_noforzados" value={formSet.p1_errores_noforzados} onChange={handleSetChange} style={{ width: '90%', padding: '6px' }} />
                 </div>
                 <div>
-                  <label style={{ fontSize: '12px', color: '#4a5568' }}>Errores No Forzados (Rival)</label>
+                  <label style={{ fontSize: '12px', color: 'var(--texto-2)' }}>Errores No Forzados (Rival)</label>
                   <input type="number" name="p2_errores_noforzados" value={formSet.p2_errores_noforzados} onChange={handleSetChange} style={{ width: '90%', padding: '6px' }} />
                 </div>
                 <div>
-                  <label style={{ fontSize: '12px', color: '#4a5568' }}>Break Points Ganados (J1)</label>
+                  <label style={{ fontSize: '12px', color: 'var(--texto-2)' }}>Break Points Ganados (J1)</label>
                   <input type="number" name="p1_break_points_ganados" value={formSet.p1_break_points_ganados} onChange={handleSetChange} style={{ width: '90%', padding: '6px' }} />
                 </div>
                 <div>
-                  <label style={{ fontSize: '12px', color: '#4a5568' }}>Break Points Ganados (Rival)</label>
+                  <label style={{ fontSize: '12px', color: 'var(--texto-2)' }}>Break Points Ganados (Rival)</label>
                   <input type="number" name="p2_break_points_ganados" value={formSet.p2_break_points_ganados} onChange={handleSetChange} style={{ width: '90%', padding: '6px' }} />
                 </div>
                 <div>
-                  <label style={{ fontSize: '12px', color: '#4a5568' }}>Break Points Totales (J1)</label>
+                  <label style={{ fontSize: '12px', color: 'var(--texto-2)' }}>Break Points Totales (J1)</label>
                   <input type="number" min="0" name="p1_break_points_totales" value={formSet.p1_break_points_totales} onChange={handleSetChange} style={{ width: '90%', padding: '6px' }} />
                 </div>
                 <div>
-                  <label style={{ fontSize: '12px', color: '#4a5568' }}>Break Points Totales (Rival)</label>
+                  <label style={{ fontSize: '12px', color: 'var(--texto-2)' }}>Break Points Totales (Rival)</label>
                   <input type="number" min="0" name="p2_break_points_totales" value={formSet.p2_break_points_totales} onChange={handleSetChange} style={{ width: '90%', padding: '6px' }} />
                 </div>
                 <div>
-                  <label style={{ fontSize: '12px', color: '#4a5568' }}>Juegos en el set (Jugador)</label>
+                  <label style={{ fontSize: '12px', color: 'var(--texto-2)' }}>Juegos en el set (Jugador)</label>
                   <input type="number" min="0" max="7" name="p1_juegos" value={formSet.p1_juegos} onChange={handleSetChange} style={{ width: '90%', padding: '6px' }} />
                 </div>
                 <div>
-                  <label style={{ fontSize: '12px', color: '#4a5568' }}>Juegos en el set (Rival)</label>
+                  <label style={{ fontSize: '12px', color: 'var(--texto-2)' }}>Juegos en el set (Rival)</label>
                   <input type="number" min="0" max="7" name="p2_juegos" value={formSet.p2_juegos} onChange={handleSetChange} style={{ width: '90%', padding: '6px' }} />
                 </div>
               </div>
 
               <div style={{ marginBottom: '12px' }}>
-                <label style={{ fontSize: '12px', color: '#4a5568' }}>Saca el próximo punto</label>
+                <label style={{ fontSize: '12px', color: 'var(--texto-2)' }}>Saca el próximo punto</label>
                 <select name="saque_p1" value={String(formSet.saque_p1)} onChange={handleSetChange} style={{ width: '95%', padding: '6px' }}>
                   <option value="true">Jugador</option>
                   <option value="false">Rival</option>
@@ -374,14 +332,14 @@ function Tablero({ tenista }) {
               </div>
 
               <div style={{ marginBottom: '16px' }}>
-                <label style={{ fontSize: '12px', color: '#4a5568' }}>Puntos Jugados en el Set (hasta ahora)</label>
+                <label style={{ fontSize: '12px', color: 'var(--texto-2)' }}>Puntos Jugados en el Set (hasta ahora)</label>
                 <input type="number" name="puntos_totales_disputados" value={formSet.puntos_totales_disputados} onChange={handleSetChange} style={{ width: '95%', padding: '6px' }} />
               </div>
 
               <button
                 type="submit"
                 disabled={loadingSet}
-                style={{ width: '100%', padding: '12px', background: '#2c5282', color: 'white', border: 'none', borderRadius: '6px', fontWeight: 'bold', cursor: 'pointer' }}
+                style={{ width: '100%', padding: '12px', background: 'var(--marca)', color: 'white', border: 'none', borderRadius: '6px', fontWeight: 'bold', cursor: 'pointer' }}
               >
                 {loadingSet ? 'Calculando...' : 'Calcular Probabilidad de Set'}
               </button>
@@ -391,33 +349,33 @@ function Tablero({ tenista }) {
 
           <div>
             {resSet ? (
-              <div style={{ background: 'white', padding: '24px', borderRadius: '8px', border: '1px solid #e2e8f0', boxShadow: '0 2px 8px rgba(0,0,0,0.08)' }}>
+              <div style={{ background: 'white', padding: '24px', borderRadius: '8px', border: '1px solid var(--borde)', boxShadow: '0 2px 8px rgba(0,0,0,0.08)' }}>
                 {guardadoSet && <div style={cajaOk}>Medición guardada en el partido.</div>}
-                <span style={{ fontSize: '12px', color: '#718096', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Proyección Táctica de Set</span>
-                <h3 style={{ margin: '8px 0 16px 0', color: '#2b6cb0' }}>{resSet.diagnostico_momentum}</h3>
+                <span style={{ fontSize: '12px', color: 'var(--texto-2)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Proyección Táctica de Set</span>
+                <h3 style={{ margin: '8px 0 16px 0', color: 'var(--marca)' }}>{resSet.diagnostico_momentum}</h3>
 
                 <div style={{ marginBottom: '20px' }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '6px', fontSize: '14px', fontWeight: '600' }}>
                     <span>Probabilidad Tenista: {resSet.probabilidad_ganar_set_p1}%</span>
                     <span>Rival: {resSet.probabilidad_ganar_set_p2}%</span>
                   </div>
-                  <div style={{ width: '100%', background: '#edf2f7', height: '16px', borderRadius: '8px', overflow: 'hidden', display: 'flex' }}>
-                    <div style={{ width: `${resSet.probabilidad_ganar_set_p1}%`, background: '#38a169', transition: 'width 0.4s ease' }} />
-                    <div style={{ width: `${resSet.probabilidad_ganar_set_p2}%`, background: '#e53e3e', transition: 'width 0.4s ease' }} />
+                  <div style={{ width: '100%', background: 'var(--suave)', height: '16px', borderRadius: '8px', overflow: 'hidden', display: 'flex' }}>
+                    <div style={{ width: `${resSet.probabilidad_ganar_set_p1}%`, background: 'var(--marca)', transition: 'width 0.4s ease' }} />
+                    <div style={{ width: `${resSet.probabilidad_ganar_set_p2}%`, background: '#9aa9b5', transition: 'width 0.4s ease' }} />
                   </div>
                 </div>
 
-                <p style={{ fontSize: '13px', color: '#4a5568', margin: '0 0 8px 0' }}>
+                <p style={{ fontSize: '13px', color: 'var(--texto-2)', margin: '0 0 8px 0' }}>
                   <strong>Fiabilidad de la estimación:</strong> {resSet.nivel_confiabilidad}
                   {resSet.nivel_confiabilidad === 'Baja' && ' (se necesitan al menos 10 puntos jugados)'}
                 </p>
-                <p style={{ fontSize: '13px', color: '#718096', margin: 0 }}>
+                <p style={{ fontSize: '13px', color: 'var(--texto-2)', margin: 0 }}>
                   Modelo {resSet.modelo_version} entrenado con puntos de Grand Slam 2013 (US Open, Wimbledon y Roland Garros).
                 </p>
                 <LecturaCombinada entrada={entradaSet} resPsi={resPsi} tenista={tenista} />
               </div>
             ) : (
-              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%', border: '2px dashed #cbd5e0', borderRadius: '8px', color: '#a0aec0', padding: '40px', textAlign: 'center' }}>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%', border: '2px dashed var(--borde)', borderRadius: '8px', color: 'var(--texto-2)', padding: '40px', textAlign: 'center' }}>
                 Ingrese los parciales del set para estimar la probabilidad probabilística de victoria.
               </div>
             )}
